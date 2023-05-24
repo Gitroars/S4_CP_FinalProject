@@ -1,5 +1,15 @@
 import pybullet as p
 import time
+import tkinter as tk
+
+window = tk.Tk()
+label = tk.Label(window, text="Adjust the value according to your needs!")
+label.grid(row=0, column=0)
+
+window.mainloop()
+
+
+
 
 # Initialize PyBullet
 p.connect(p.GUI)
