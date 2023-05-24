@@ -6,6 +6,10 @@ window = tk.Tk()
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0)
 
+
+weight_label = tk.Label(window, text="Weight (gr):")
+size_label = tk.Label(window, text="Size:")
+
 window.mainloop()
 
 
