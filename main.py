@@ -2,15 +2,29 @@ import pybullet as p
 import time
 import tkinter as tk
 
-window = tk.Tk()
+def get_input():
+    weight_input = weight_entry.get()
+
+window = tk.Tk() #Create a UI
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0)
 
-
+#Text labels
 weight_label = tk.Label(window, text="Weight (gr):")
 size_label = tk.Label(window, text="Size:")
+weight_label.grid(row=1,column=0)
+size_label.grid(row=2, column=0)
+#Input Fields
+weight_entry = tk.Entry(window)
+weight_entry.grid(row=1,column=1)
+size_entry = tk.Entry(window)
+size_entry.grid(row=2,column=1)
 
-window.mainloop()
+
+
+
+
+window.mainloop() #Launch the UI
 
 
 
