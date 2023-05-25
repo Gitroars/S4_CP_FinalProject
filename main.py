@@ -40,10 +40,11 @@ plane_visual_id = p.createVisualShape(p.GEOM_PLANE, rgbaColor=[0.5, 0.5, 0.5, 1]
 plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
 
 # Create the phone
-base_size = 0.1  # Size of the phone base
+base_width = 0.1 
+base_depth = 0.1 # Size of the phone base
 base_height = 0.01  # Height of the phone base
-phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_size, base_size, base_height])
-phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_size, base_size, base_height], rgbaColor=[1, 0, 0, 1])
+phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
+phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
 phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
 p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
 
