@@ -20,11 +20,12 @@ def run_simulation():
     base_width = float(width_entry.get())
     base_depth = float(depth_entry.get())
     base_height = float(height_entry.get())
+    drop_height = float(drop_height_entry.get())
     
     phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
     phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
     phone_body_id = p.createMultiBody(phone_weight, phone_id, phone_visual_id)
-    p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
+    p.resetBasePositionAndOrientation(phone_body_id, [0, 0, drop_height], [0, 0, 0, 1])
 
     max_impact_energy = 0
     # Run the simulation
@@ -54,30 +55,32 @@ label.grid(row=0, column=0)
 
 
 weight_label = tk.Label(window, text="Weight (gr):")
-weight_label.grid(row=1,column=0)
+weight_label.grid(row=1, column=0)
 weight_entry = tk.Entry(window)
-weight_entry.grid(row=1,column=1)
+weight_entry.grid(row=1, column=1)
 
-width_label = tk.Label(window, text="Width:")
+width_label = tk.Label(window, text="Width (m):")
 width_label.grid(row=2, column=0)
 width_entry = tk.Entry(window)
-width_entry.grid(row=2,column=1)
+width_entry.grid(row=2, column=1)
 
-depth_label = tk.Label(window, text="Depth:")
-depth_label.grid(row=2, column=2)
+depth_label = tk.Label(window, text="Depth (m):")
+depth_label.grid(row=3, column=0)
 depth_entry = tk.Entry(window)
-depth_entry.grid(row=2,column=3)
+depth_entry.grid(row=3, column=1)
 
-height_label = tk.Label(window, text="Height:")
-height_label.grid(row=2, column=4)
+height_label = tk.Label(window, text="Height (m):")
+height_label.grid(row=4, column=0)
 height_entry = tk.Entry(window)
-height_entry.grid(row=2,column=5)
+height_entry.grid(row=4, column=1)
+
+drop_height_label = tk.Label(window, text="Drop Height (m):")
+drop_height_label.grid(row=5, column=0)
+drop_height_entry = tk.Entry(window)
+drop_height_entry.grid(row=5, column=1)
 
 simulation_button = tk.Button(window, text="Begin Simulation",command=lambda:run_simulation())
-simulation_button.grid(row=3,column=0)
+simulation_button.grid(row=6, column=0)
 
 
 window.mainloop() #Launch the UI in an endless loop
-
-
-
