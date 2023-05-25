@@ -45,7 +45,7 @@ phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_size, base_s
 phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
 p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
 
-
+max_impact_energy = 0
 # Run the simulation
 for i in range(1000):
     p.stepSimulation()
@@ -57,8 +57,10 @@ for i in range(1000):
     phone_velocity_magnitude = (phone_velocity[0]**2 + phone_velocity[1]**2 + phone_velocity[2]**2)**0.5
     impact_energy = 0.5*phone_mass*phone_velocity_magnitude
     print(f"Impact energy: {impact_energy}")
-
+    if impact_energy>max_impact_energy:
+        max_impact_energy   = impact_energy
 # Keep the window open until explicitly closed
+print(f"Maximum impact energy: {max_impact_energy}")
 while True:
     p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
     time.sleep(0.01)
