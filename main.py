@@ -15,13 +15,15 @@ def run_simulation():
     plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
 
     # Create the phone
+    phone_weight = float(weight_entry.get())/1000 #convert gr to kg
+
     base_width = float(width_entry.get())
     base_depth = float(depth_entry.get())
     base_height = float(height_entry.get())
-
+    
     phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
     phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
-    phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
+    phone_body_id = p.createMultiBody(phone_weight, phone_id, phone_visual_id)
     p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
 
     max_impact_energy = 0
