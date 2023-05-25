@@ -2,8 +2,7 @@ import pybullet as p
 import time
 import tkinter as tk
 
-def get_input():
-    weight_input = weight_entry.get()
+
 
 window = tk.Tk() #Create a UI
 label = tk.Label(window, text="Adjust the value according to your needs!")
@@ -15,8 +14,7 @@ size_label = tk.Label(window, text="Size:")
 weight_label.grid(row=1,column=0)
 size_label.grid(row=2, column=0)
 #Input Fields
-weight_entry = tk.Entry(window)
-weight_entry.grid(row=1,column=1)
+
 size_entry = tk.Entry(window)
 size_entry.grid(row=2,column=1)
 
@@ -31,6 +29,7 @@ window.mainloop() #Launch the UI
 
 # Initialize PyBullet
 p.connect(p.GUI)
+#Set the gravity to point downwards
 p.setGravity(0, 0, -9.8)
 
 # Create the plane
@@ -46,10 +45,18 @@ phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_size, base_s
 phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
 p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
 
+
 # Run the simulation
 for i in range(1000):
     p.stepSimulation()
     time.sleep(1/240)  # Delay to control the simulation speed
+
+    #Calculating the impact energy (one of the ways for the damage)
+    phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
+    phone_velocity,_ = p.getBaseVelocity(phone_body_id)
+    phone_velocity_magnitude = (phone_velocity[0]**2 + phone_velocity[1]**2 + phone_velocity[2]**2)**0.5
+    impact_energy = 0.5*phone_mass*phone_velocity_magnitude
+    print(f"Impact energy: {impact_energy}")
 
 # Keep the window open until explicitly closed
 while True:
