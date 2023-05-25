@@ -12,14 +12,20 @@ label.grid(row=0, column=0)
 weight_label = tk.Label(window, text="Weight (gr):")
 weight_label.grid(row=1,column=0)
 
-size_label = tk.Label(window, text="Size:")
-size_label.grid(row=2, column=0)
-size_entry = tk.Entry(window)
-size_entry.grid(row=2,column=1)
+width_label = tk.Label(window, text="Width:")
+width_label.grid(row=2, column=0)
+width_entry = tk.Entry(window)
+width_entry.grid(row=2,column=1)
 
+depth_label = tk.Label(window, text="Depth:")
+depth_label.grid(row=2, column=2)
+depth_entry = tk.Entry(window)
+depth_entry.grid(row=2,column=3)
 
-
-
+height_label = tk.Label(window, text="Height:")
+height_label.grid(row=2, column=4)
+height_entry = tk.Entry(window)
+height_entry.grid(row=2,column=5)
 
 
 
