@@ -11,6 +11,8 @@ label.grid(row=0, column=0)
 
 weight_label = tk.Label(window, text="Weight (gr):")
 weight_label.grid(row=1,column=0)
+weight_entry = tk.Entry(window)
+weight_entry.grid(row=1,column=1)
 
 width_label = tk.Label(window, text="Width:")
 width_label.grid(row=2, column=0)
