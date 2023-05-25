@@ -8,15 +8,17 @@ window = tk.Tk() #Create a UI
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0)
 
-#Text labels
-weight_label = tk.Label(window, text="Weight (gr):")
-size_label = tk.Label(window, text="Size:")
-weight_label.grid(row=1,column=0)
-size_label.grid(row=2, column=0)
-#Input Fields
 
+weight_label = tk.Label(window, text="Weight (gr):")
+weight_label.grid(row=1,column=0)
+
+size_label = tk.Label(window, text="Size:")
+size_label.grid(row=2, column=0)
 size_entry = tk.Entry(window)
 size_entry.grid(row=2,column=1)
+
+
+
 
 
 
@@ -61,6 +63,7 @@ for i in range(1000):
         max_impact_energy   = impact_energy
 # Keep the window open until explicitly closed
 print(f"Maximum impact energy: {max_impact_energy}")
+
 while True:
     p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
     time.sleep(0.01)
