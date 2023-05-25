@@ -2,6 +2,48 @@ import pybullet as p
 import time
 import tkinter as tk
 
+def run_simulation():
+
+    # Initialize PyBullet
+    p.connect(p.GUI)
+    #Set the gravity to point downwards
+    p.setGravity(0, 0, -9.8)
+
+    # Create the plane
+    plane_id = p.createCollisionShape(p.GEOM_PLANE)
+    plane_visual_id = p.createVisualShape(p.GEOM_PLANE, rgbaColor=[0.5, 0.5, 0.5, 1])
+    plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
+
+    # Create the phone
+    base_width = float(width_entry.get())
+    base_depth = float(depth_entry.get())
+    base_height = float(height_entry.get())
+
+    phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
+    phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
+    phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
+    p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
+
+    max_impact_energy = 0
+    # Run the simulation
+    for i in range(1000):
+        p.stepSimulation()
+        time.sleep(1/240)  # Delay to control the simulation speed
+
+        #Calculating the impact energy (one of the ways for the damage)
+        phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
+        phone_velocity,_ = p.getBaseVelocity(phone_body_id)
+        phone_velocity_magnitude = (phone_velocity[0]**2 + phone_velocity[1]**2 + phone_velocity[2]**2)**0.5
+        impact_energy = 0.5*phone_mass*phone_velocity_magnitude
+        print(f"Impact energy: {impact_energy}")
+        if impact_energy>max_impact_energy:
+            max_impact_energy   = impact_energy
+    # Keep the window open until explicitly closed
+    print(f"Maximum impact energy: {max_impact_energy}")
+
+    while True:
+        p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
+        time.sleep(0.01)
 
 
 window = tk.Tk() #Create a UI
@@ -29,50 +71,11 @@ height_label.grid(row=2, column=4)
 height_entry = tk.Entry(window)
 height_entry.grid(row=2,column=5)
 
+simulation_button = tk.Button(window, text="Begin Simulation",command=lambda:run_simulation())
+simulation_button.grid(row=3,column=0)
+
+
+window.mainloop() #Launch the UI in an endless loop
 
 
 
-window.mainloop() #Launch the UI
-
-
-
-
-# Initialize PyBullet
-p.connect(p.GUI)
-#Set the gravity to point downwards
-p.setGravity(0, 0, -9.8)
-
-# Create the plane
-plane_id = p.createCollisionShape(p.GEOM_PLANE)
-plane_visual_id = p.createVisualShape(p.GEOM_PLANE, rgbaColor=[0.5, 0.5, 0.5, 1])
-plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
-
-# Create the phone
-base_width = float(width_entry.get()) #Width of phone
-base_depth = float(depth_entry.get()) # Depth of the phone 
-base_height = float(height_entry.get())  # Height of the phone 
-phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
-phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
-phone_body_id = p.createMultiBody(1, phone_id, phone_visual_id)
-p.resetBasePositionAndOrientation(phone_body_id, [0, 0, 1], [0, 0, 0, 1])
-
-max_impact_energy = 0
-# Run the simulation
-for i in range(1000):
-    p.stepSimulation()
-    time.sleep(1/240)  # Delay to control the simulation speed
-
-    #Calculating the impact energy (one of the ways for the damage)
-    phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
-    phone_velocity,_ = p.getBaseVelocity(phone_body_id)
-    phone_velocity_magnitude = (phone_velocity[0]**2 + phone_velocity[1]**2 + phone_velocity[2]**2)**0.5
-    impact_energy = 0.5*phone_mass*phone_velocity_magnitude
-    print(f"Impact energy: {impact_energy}")
-    if impact_energy>max_impact_energy:
-        max_impact_energy   = impact_energy
-# Keep the window open until explicitly closed
-print(f"Maximum impact energy: {max_impact_energy}")
-
-while True:
-    p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
-    time.sleep(0.01)
