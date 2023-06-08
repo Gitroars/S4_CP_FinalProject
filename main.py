@@ -30,7 +30,7 @@ def run_simulation():
                                       [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1])
 
     max_impact_energy = 0
-
+    phone_rest_threshold = 0.001 
     # Damage Thresholds
     threshold_minor = 50
     threshold_moderate = 200
@@ -38,7 +38,7 @@ def run_simulation():
 
 
     # Run the simulation
-    for i in range(1500):
+    while True:
         p.stepSimulation()
         time.sleep(1/240)  # Delay to control the simulation speed
 
@@ -46,12 +46,15 @@ def run_simulation():
         phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
         phone_velocity, phone_angular_velocity = p.getBaseVelocity(phone_body_id)
         phone_velocity_magnitude = math.pow(math.pow(phone_velocity[0], 2) + math.pow(phone_velocity[1], 2) + math.pow(phone_velocity[2], 2), 0.5)
-        impact_energy = 0.5 * phone_mass * phone_velocity_magnitude
+        impact_energy = 0.5 * phone_mass * (phone_velocity_magnitude ** 2) * 0.001
+
         print(f"Impact energy: {impact_energy}")
         if impact_energy>max_impact_energy:
             max_impact_energy   = impact_energy
+        if phone_velocity_magnitude < phone_rest_threshold:
+            break
 
-    (f"Maximum impact energy: {max_impact_energy}")
+    print(f"Maximum impact energy: {max_impact_energy}")
     
 
     # Calculating the damage
