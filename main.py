@@ -50,7 +50,7 @@ def run_simulation():
         p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
         time.sleep(0.01)
 
-def fill_values(weight, width, depth, height):
+def fill_dimension_values(weight, width, depth, height):
     weight_entry.delete(0, weight_entry.__sizeof__())
     width_entry.delete(0, width_entry.__sizeof__())
     depth_entry.delete(0, depth_entry.__sizeof__())
@@ -111,10 +111,10 @@ simulation_button.grid(row=7, column=0, columnspan=4)
 presets_label = tk.Label(window, text="Presets")
 presets_label.grid(row=0, column=2, columnspan=2)
 
-preset1_button = tk.Button(window, text="Phone", command=lambda:fill_values(175, 0.075, 0.008, 0.16))
+preset1_button = tk.Button(window, text="Phone", command=lambda:fill_dimension_values(175, 0.075, 0.008, 0.16))
 preset1_button.grid(row=2, column=2, columnspan=2)
 
-preset2_button = tk.Button(window, text="Tablet", command=lambda:fill_values(400, 0.160, 0.007, 0.24))
+preset2_button = tk.Button(window, text="Tablet", command=lambda:fill_dimension_values(400, 0.160, 0.007, 0.24))
 preset2_button.grid(row=4, column=2, columnspan=2)
 
 window.mainloop() #Launch the UI in an endless loop
