@@ -8,7 +8,7 @@ def run_simulation():
     # Initialize PyBullet
     p.connect(p.GUI)
     #Set the gravity to point downwards
-    p.setGravity(0, 0, -9.8)
+    p.setGravity(0, 0, -9.81)
 
     # Create the plane
     plane_id = p.createCollisionShape(p.GEOM_PLANE)
@@ -30,8 +30,15 @@ def run_simulation():
                                       [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1])
 
     max_impact_energy = 0
+
+    # Damage Thresholds
+    threshold_minor = 50
+    threshold_moderate = 200
+    threshold_severe = 500
+
+
     # Run the simulation
-    for i in range(1000):
+    for i in range(1500):
         p.stepSimulation()
         time.sleep(1/240)  # Delay to control the simulation speed
 
@@ -39,13 +46,25 @@ def run_simulation():
         phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
         phone_velocity, phone_angular_velocity = p.getBaseVelocity(phone_body_id)
         phone_velocity_magnitude = math.pow(math.pow(phone_velocity[0], 2) + math.pow(phone_velocity[1], 2) + math.pow(phone_velocity[2], 2), 0.5)
-        impact_energy = 0.5*phone_mass*phone_velocity_magnitude
+        impact_energy = 0.5 * phone_mass * phone_velocity_magnitude
         print(f"Impact energy: {impact_energy}")
         if impact_energy>max_impact_energy:
             max_impact_energy   = impact_energy
-    # Keep the window open until explicitly closed
-    print(f"Maximum impact energy: {max_impact_energy}")
 
+    (f"Maximum impact energy: {max_impact_energy}")
+    
+
+    # Calculating the damage
+    if (max_impact_energy < threshold_minor):
+        print("No Significant damage.")
+    elif (max_impact_energy < threshold_moderate):
+        print("Minor damahge. Functional with cosmetic damage.")
+    elif (max_impact_energy < threshold_severe):
+        print("Moderate damage. Noticeable structural damage.")
+    else:
+        print("Extensive damage. Barely functional or non-funcitonal")
+
+    # Keep the window open until explicitly closed
     while True:
         p.getCameraImage(640, 480)  # Call a PyBullet function to keep the window open
         time.sleep(0.01)
