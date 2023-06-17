@@ -37,6 +37,7 @@ def run_simulation():
     threshold_severe_percentage = 70
 
     impact_energies = []
+    highest_damage_level = None
     # Run the simulation
     while True:
         p.stepSimulation()
@@ -46,12 +47,14 @@ def run_simulation():
         phone_mass = p.getDynamicsInfo(phone_body_id,-1)[0]
         phone_velocity, phone_angular_velocity = p.getBaseVelocity(phone_body_id)
         phone_velocity_magnitude = math.pow(math.pow(phone_velocity[0], 2) + math.pow(phone_velocity[1], 2) + math.pow(phone_velocity[2], 2), 0.5)
-        impact_energy = 0.5 * phone_mass * (phone_velocity_magnitude ** 2) * 0.001
+        impact_energy = 0.5 * phone_mass * (phone_velocity_magnitude ** 2)
+
         impact_energies.append(impact_energy)
         print(f"Impact energy: {impact_energy}")
         if impact_energy>max_impact_energy:
             max_impact_energy   = impact_energy
-        if phone_velocity_magnitude < phone_rest_threshold:
+        if phone_velocity_magnitude < phone_rest_threshold and all(v < 0.01 for v in phone_angular_velocity):
+
             break
 
     print(f"Maximum impact energy: {max_impact_energy}")
@@ -61,16 +64,19 @@ def run_simulation():
     threshold_moderate = threshold_moderate_percentage * max_impact_energy / 100
     threshold_severe = threshold_severe_percentage * max_impact_energy / 100
 
+
     # Calculating the damage
     for impact_energy in impact_energies:
         if (impact_energy < threshold_minor):
-            print("No Significant damage.")
+            highest_damage_level = "No Significant damage."
         elif (impact_energy < threshold_moderate):
-            print("Minor damahge. Functional with cosmetic damage.")
+           highest_damage_level="Minor damage. Functional with cosmetic damage."
         elif (impact_energy < threshold_severe):
-            print("Moderate damage. Noticeable structural damage.")
+            highest_damage_level="Moderate damage. Noticeable structural damage."
         else:
-            print("Extensive damage. Barely functional or non-functional")
+            highest_damage_level="Extensive damage. Barely functional or non-functional"
+
+    print(highest_damage_level)
 
     # Keep the window open until explicitly closed
     while True:
