@@ -63,11 +63,11 @@ def run_simulation():
 
     # Calculating the damage
     for impact_energy in impact_energies:
-        if (max_impact_energy < threshold_minor):
+        if (impact_energy < threshold_minor):
             print("No Significant damage.")
-        elif (max_impact_energy < threshold_moderate):
+        elif (impact_energy < threshold_moderate):
             print("Minor damahge. Functional with cosmetic damage.")
-        elif (max_impact_energy < threshold_severe):
+        elif (impact_energy < threshold_severe):
             print("Moderate damage. Noticeable structural damage.")
         else:
             print("Extensive damage. Barely functional or non-functional")
