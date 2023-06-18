@@ -15,7 +15,7 @@ def run_simulation():
     plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
 
     # Create the phone
-    phone_weight = float(weight_entry.get()) / 1000  # convert grams to kilograms
+    phone_mass = float(mass_entry.get())/1000 #convert gr to kg
 
     base_width = float(width_entry.get())
     base_depth = float(depth_entry.get())
@@ -24,17 +24,12 @@ def run_simulation():
 
     phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
     phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
-    phone_body_id = p.createMultiBody(phone_weight, phone_id, phone_visual_id)
+    phone_body_id = p.createMultiBody(phone_mass, phone_id, phone_visual_id)
     p.resetBasePositionAndOrientation(
         phone_body_id, [0, 0, drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
     )
 
-
     phone_rest_threshold = 0.001
-
-    # Damage Thresholds
-   
-
     
     impact_energies = []
     highest_damage_level = 0
@@ -53,8 +48,6 @@ def run_simulation():
         impact_energy = initial_potential_energy - final_potential_energy
 
         impact_energies.append(impact_energy)
-        
-        
         
         if phone_velocity_magnitude < phone_rest_threshold and all(v < 0.01 for v in phone_angular_velocity):
             break
@@ -99,24 +92,25 @@ def run_simulation():
         time.sleep(0.01)
 
 def fill_dimension_values(weight, width, depth, height):
-    weight_entry.delete(0, tk.END)
+    mass_entry.delete(0, tk.END)
     width_entry.delete(0, tk.END)
     depth_entry.delete(0, tk.END)
     height_entry.delete(0, tk.END)
-    weight_entry.insert(0, weight)
+    mass_entry.insert(0, weight)
     width_entry.insert(0, width)
     depth_entry.insert(0, depth)
     height_entry.insert(0, height)
 
 window = tk.Tk()  # Create a UI
+window.title("Drop Simulation")
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0, columnspan=2)
 
-weight_label = tk.Label(window, text="Weight (gr):")
-weight_label.grid(row=1, column=0)
-weight_entry = tk.Entry(window)
-weight_entry.grid(row=1, column=1)
-weight_entry.insert(0, 1000)
+mass_label = tk.Label(window, text="Mass (gr):")
+mass_label.grid(row=1, column=0)
+mass_entry = tk.Entry(window)
+mass_entry.grid(row=1, column=1)
+mass_entry.insert(0, 1000)
 
 width_label = tk.Label(window, text="Width (m):")
 width_label.grid(row=2, column=0)
