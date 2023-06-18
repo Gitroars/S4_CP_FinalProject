@@ -29,8 +29,8 @@ def run_simulation():
         phone_body_id, [0, 0, drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
     )
 
+
     phone_rest_threshold = 0.001
-    
     impact_energies = []
     highest_damage_level = 0
 
@@ -77,14 +77,19 @@ def run_simulation():
         else:
             highest_damage_level = max(highest_damage_level, 1)
 
+    # Displaying results
+    result_text = None
+    
     if highest_damage_level == 4:
-        print("Extensive damage. Barely functional or non-functional")
+        result_text = "Extensive damage. Barely functional or non-functional"
     elif highest_damage_level == 3:
-        print("Moderate damage. Noticeable structural damage.")
+        result_text = "Moderate damage. Noticeable structural damage."
     elif highest_damage_level == 2:
-        print("Minor damage. Functional with cosmetic damage.")
+        result_text = "Minor damage. Functional with cosmetic damage."
     else:
-        print("No significant damage.")
+        result_text = "No significant damage."
+
+    show_results(result_text, max_impact_energy)
 
     # Keep the window open until explicitly closed
     while True:
@@ -101,8 +106,31 @@ def fill_dimension_values(weight, width, depth, height):
     depth_entry.insert(0, depth)
     height_entry.insert(0, height)
 
+# Function to create and display a results window.
+def show_results(results_text: str, max_impact_energy: float):
+    results_window = tk.Tk()
+    results_window.title("Drop Simulation Results")
+    results_window.configure(padx=50, pady=20)
+
+    results_label = tk.Label(results_window, text="Results:")
+    results_label.grid(row=0, column=1)
+
+    results_text_label = tk.Label(results_window, text=results_text)
+    results_text_label.grid(row=1, column=0, columnspan=3)
+
+    damage_text = tk.Label(results_window, text="Damage sustained at impact:")
+    damage_text.grid(row=2, column=0, columnspan=2)
+
+    damage_display = tk.Label(results_window, text=f"{max_impact_energy:.5f} Joules")
+    damage_display.grid(row=2, column=2)
+
+    results_window.mainloop()
+
+
 window = tk.Tk()  # Create a UI
 window.title("Drop Simulation")
+window.configure(padx=20, pady=10)
+
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0, columnspan=2)
 
@@ -134,7 +162,7 @@ drop_height_label = tk.Label(window, text="Drop Height (m):")
 drop_height_label.grid(row=5, column=0)
 drop_height_entry = tk.Entry(window)
 drop_height_entry.grid(row=5, column=1)
-drop_height_entry.insert(0, 0.1)
+drop_height_entry.insert(0, 1)
 
 orientation_entry_label = tk.Label(window, text="Orientation° (x, y, z): ")
 orientation_entry_label.grid(row=6, column=0)
@@ -148,6 +176,7 @@ orientation_entry[2].insert(0, 0)
 
 simulation_button = tk.Button(window, text="Begin Simulation", command=lambda: run_simulation())
 simulation_button.grid(row=7, column=0, columnspan=4)
+simulation_button.grid_configure(pady=[15, 0])
 
 presets_label = tk.Label(window, text="Presets")
 presets_label.grid(row=0, column=2, columnspan=2)
