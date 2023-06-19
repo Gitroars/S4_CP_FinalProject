@@ -9,10 +9,13 @@ def run_simulation():
     p.connect(p.GUI)
     p.setGravity(0, 0, -9.81)
 
+    
+
     # Create the plane
     plane_id = p.createCollisionShape(p.GEOM_PLANE)
     plane_visual_id = p.createVisualShape(p.GEOM_PLANE, rgbaColor=[0.5, 0.5, 0.5, 1])
     plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
+    
 
     # Create the phone
     phone_mass = float(mass_entry.get())/1000 #convert gr to kg
@@ -23,7 +26,7 @@ def run_simulation():
     drop_height = float(drop_height_entry.get())
 
     phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
-    phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
+    phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[0, 0, 0, 1])
     phone_body_id = p.createMultiBody(phone_mass, phone_id, phone_visual_id)
     p.resetBasePositionAndOrientation(
         phone_body_id, [0, 0, drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
