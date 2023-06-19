@@ -15,22 +15,33 @@ def run_simulation():
     plane_body_id = p.createMultiBody(0, plane_id, plane_visual_id)
 
     # Create the phone
-    phone_mass = float(mass_entry.get())/1000 #convert gr to kg
+    phone_mass = float(mass_entry.get()) / 1000  # convert gr to kg
 
     base_width = float(width_entry.get())
     base_depth = float(depth_entry.get())
     base_height = float(height_entry.get())
     drop_height = float(drop_height_entry.get())
 
-    phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
-    phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[1, 0, 0, 1])
-    phone_body_id = p.createMultiBody(phone_mass, phone_id, phone_visual_id)
+    phone_parent_id = p.createMultiBody(0, 0)
+    phone_parent_position = [0, 0, drop_height]
+    p.resetBasePositionAndOrientation(phone_parent_id, phone_parent_position, [0, 0, 0, 1])
+
+    front_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height / 2])
+    front_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height / 2], rgbaColor=[1, 0, 0, 1])
+    front_local_position = [0, 0, base_height / 4]
+    front_body_id = p.createMultiBody(phone_mass, front_id, front_visual_id, phone_parent_id, front_local_position)
+
+    back_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height / 2])
+    back_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height / 2], rgbaColor=[1, 0, 0, 1])
+    back_local_position = [0, 0, -base_height / 4]
+    back_body_id = p.createMultiBody(phone_mass, back_id, back_visual_id, phone_parent_id, back_local_position)
+
     p.resetBasePositionAndOrientation(
-        phone_body_id, [0, 0, drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
-    )
+    phone_parent_id, [0, 0, base_height/2 + drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
+)
+
 
     phone_rest_threshold = 0.001
-    
     impact_energies = []
     highest_damage_level = 0
 
@@ -40,17 +51,25 @@ def run_simulation():
         time.sleep(1 / 240)  # Delay to control the simulation speed
 
         # Calculating the impact energy
-        phone_mass = p.getDynamicsInfo(phone_body_id, -1)[0]
-        phone_velocity, phone_angular_velocity = p.getBaseVelocity(phone_body_id)
-        phone_velocity_magnitude = math.sqrt(phone_velocity[0] ** 2 + phone_velocity[1] ** 2 + phone_velocity[2] ** 2)
+        phone_mass = p.getDynamicsInfo(front_body_id, -1)[0] + p.getDynamicsInfo(back_body_id, -1)[0]
+        front_velocity, front_angular_velocity = p.getBaseVelocity(front_body_id)
+        back_velocity, back_angular_velocity = p.getBaseVelocity(back_body_id)
+        front_velocity_magnitude = math.sqrt(front_velocity[0]**2 + front_velocity[1]**2 + front_velocity[2]**2)
+        back_velocity_magnitude = math.sqrt(back_velocity[0]**2 + back_velocity[1]**2 + back_velocity[2]**2)
         initial_potential_energy = phone_mass * 9.81 * drop_height
         final_potential_energy = phone_mass * 9.81 * 0
-        impact_energy = initial_potential_energy - final_potential_energy
-
+        front_impact_energy = initial_potential_energy - final_potential_energy
+        back_impact_energy = initial_potential_energy - final_potential_energy
+        impact_energy = front_impact_energy + back_impact_energy
         impact_energies.append(impact_energy)
-        
-        if phone_velocity_magnitude < phone_rest_threshold and all(v < 0.01 for v in phone_angular_velocity):
+
+        # Check if phone has come to rest
+        front_rest = front_velocity_magnitude < phone_rest_threshold and all(v < phone_rest_threshold for v in front_angular_velocity)
+        back_rest = back_velocity_magnitude < phone_rest_threshold and all(v < phone_rest_threshold for v in back_angular_velocity)
+        if front_rest and back_rest:
             break
+
+   
 
     
     max_impact_energy = 0
@@ -77,14 +96,19 @@ def run_simulation():
         else:
             highest_damage_level = max(highest_damage_level, 1)
 
+    # Displaying results
+    result_text = None
+    
     if highest_damage_level == 4:
-        print("Extensive damage. Barely functional or non-functional")
+        result_text = "Extensive damage. Barely functional or non-functional"
     elif highest_damage_level == 3:
-        print("Moderate damage. Noticeable structural damage.")
+        result_text = "Moderate damage. Noticeable structural damage."
     elif highest_damage_level == 2:
-        print("Minor damage. Functional with cosmetic damage.")
+        result_text = "Minor damage. Functional with cosmetic damage."
     else:
-        print("No significant damage.")
+        result_text = "No significant damage."
+
+    show_results(result_text, max_impact_energy)
 
     # Keep the window open until explicitly closed
     while True:
@@ -101,8 +125,31 @@ def fill_dimension_values(weight, width, depth, height):
     depth_entry.insert(0, depth)
     height_entry.insert(0, height)
 
+# Function to create and display a results window.
+def show_results(results_text: str, max_impact_energy: float):
+    results_window = tk.Tk()
+    results_window.title("Drop Simulation Results")
+    results_window.configure(padx=50, pady=20)
+
+    results_label = tk.Label(results_window, text="Results:")
+    results_label.grid(row=0, column=1)
+
+    results_text_label = tk.Label(results_window, text=results_text)
+    results_text_label.grid(row=1, column=0, columnspan=3)
+
+    damage_text = tk.Label(results_window, text="Damage sustained at impact:")
+    damage_text.grid(row=2, column=0, columnspan=2)
+
+    damage_display = tk.Label(results_window, text=f"{max_impact_energy:.5f} Joules")
+    damage_display.grid(row=2, column=2)
+
+    results_window.mainloop()
+
+
 window = tk.Tk()  # Create a UI
 window.title("Drop Simulation")
+window.configure(padx=20, pady=10)
+
 label = tk.Label(window, text="Adjust the value according to your needs!")
 label.grid(row=0, column=0, columnspan=2)
 
@@ -134,7 +181,7 @@ drop_height_label = tk.Label(window, text="Drop Height (m):")
 drop_height_label.grid(row=5, column=0)
 drop_height_entry = tk.Entry(window)
 drop_height_entry.grid(row=5, column=1)
-drop_height_entry.insert(0, 0.1)
+drop_height_entry.insert(0, 1)
 
 orientation_entry_label = tk.Label(window, text="Orientation° (x, y, z): ")
 orientation_entry_label.grid(row=6, column=0)
@@ -148,6 +195,7 @@ orientation_entry[2].insert(0, 0)
 
 simulation_button = tk.Button(window, text="Begin Simulation", command=lambda: run_simulation())
 simulation_button.grid(row=7, column=0, columnspan=4)
+simulation_button.grid_configure(pady=[15, 0])
 
 presets_label = tk.Label(window, text="Presets")
 presets_label.grid(row=0, column=2, columnspan=2)
