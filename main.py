@@ -2,6 +2,7 @@ import pybullet as p
 import time
 import tkinter as tk
 import math
+from phone import Phone
 
 def run_simulation():
 
@@ -18,19 +19,9 @@ def run_simulation():
     
 
     # Create the phone
-    phone_mass = float(mass_entry.get())/1000 #convert gr to kg
-
-    base_width = float(width_entry.get())
-    base_depth = float(depth_entry.get())
-    base_height = float(height_entry.get())
-    drop_height = float(drop_height_entry.get())
-
-    phone_id = p.createCollisionShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height])
-    phone_visual_id = p.createVisualShape(p.GEOM_BOX, halfExtents=[base_width, base_depth, base_height], rgbaColor=[0, 0, 0, 1])
-    phone_body_id = p.createMultiBody(phone_mass, phone_id, phone_visual_id)
-    p.resetBasePositionAndOrientation(
-        phone_body_id, [0, 0, drop_height], [float(orientation_entry[0].get()), float(orientation_entry[1].get()), float(orientation_entry[2].get()), 1]
-    )
+    phone = Phone(float(mass_entry.get()),float(width_entry.get()),float(depth_entry.get()),float(height_entry.get()),float(drop_height_entry.get()), [float(orientation_entry[i].get()) for i in range(3)])
+    phone.create_phone()
+   
 
 
     phone_rest_threshold = 0.001
@@ -43,16 +34,15 @@ def run_simulation():
         time.sleep(1 / 240)  # Delay to control the simulation speed
 
         # Calculating the impact energy
-        phone_mass = p.getDynamicsInfo(phone_body_id, -1)[0]
-        phone_velocity, phone_angular_velocity = p.getBaseVelocity(phone_body_id)
-        phone_velocity_magnitude = math.sqrt(phone_velocity[0] ** 2 + phone_velocity[1] ** 2 + phone_velocity[2] ** 2)
-        initial_potential_energy = phone_mass * 9.81 * drop_height
+        phone_velocity_magnitude = phone.get_velocity_magnitude()
+        phone_mass = p.getDynamicsInfo(phone.phone_body_id, -1)[0]
+        initial_potential_energy = phone_mass * 9.81 * phone.drop_height
         final_potential_energy = phone_mass * 9.81 * 0
         impact_energy = initial_potential_energy - final_potential_energy
 
         impact_energies.append(impact_energy)
         
-        if phone_velocity_magnitude < phone_rest_threshold and all(v < 0.01 for v in phone_angular_velocity):
+        if phone_velocity_magnitude < phone_rest_threshold and phone.is_resting():
             break
 
     
@@ -91,6 +81,8 @@ def run_simulation():
         result_text = "Minor damage. Functional with cosmetic damage."
     else:
         result_text = "No significant damage."
+
+    p.disconnect()
 
     show_results(result_text, max_impact_energy)
 
